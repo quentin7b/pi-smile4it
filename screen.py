@@ -4,11 +4,12 @@ import datetime
 from time import sleep
 from PIL import Image
 
+SCREEN_RESOLUTION = (1184, 624)
 RESOLUTION = 800
 VERTICAL_SIZES = (200 + RESOLUTION, 800 + 4 * RESOLUTION)
 SQUARE_SIZES = (300 + 2 * RESOLUTION, 700 + 2 * RESOLUTION)
 last_overlay = None
-home = Image.open('res/home_1.jpg')
+home = Image.open('res/home_1.jpg').resize(SCREEN_RESOLUTION, Image.ANTIALIAS)
 
 
 def draw_home(camera):
@@ -17,8 +18,33 @@ def draw_home(camera):
 
 def display_rendered(camera, images, timeout):
     for image in images:
-        set_image_on_screen(camera, image, 255)
+        img = resize(image)
+        set_image_on_screen(camera, img, 255)
         sleep(timeout)
+
+
+def resize(image):
+    width, height = image.size
+    if width > height:
+        # horizontal image
+        if width > SCREEN_RESOLUTION[0]:
+            # image width is larger than screen
+            ratio = math.floor(width / SCREEN_RESOLUTION[0])
+            resize = (SCREEN_RESOLUTION[0], ratio * SCREEN_RESOLUTION[1])
+            return image.resize(resize, Image.ANTIALIAS)
+        else:
+            # image width is lower than screen
+            return image
+    else:
+        # vertical image
+        if height > SCREEN_RESOLUTION[1]:
+            # image height smaller than screen
+            return image
+        else:
+            # image height bigger than screen
+            ratio = math.floor(height / SCREEN_RESOLUTION[1])
+            resize = (width * SCREEN_RESOLUTION[0], SCREEN_RESOLUTION[1])
+            return image.resize(resize, Image.ANTIALIAS)
 
 
 def set_image_on_screen(camera, img, transparency=100):

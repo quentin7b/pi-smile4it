@@ -22,7 +22,7 @@ with picamera.PiCamera() as camera:
         picture_count = 4
         picture_list = []
         while picture_count is not 0:
-            picture_list.append(take_picture(camera))
+            picture_list.append(take_picture(camera, 1))
             picture_count -= 1
 
         # Stop the preview
@@ -32,4 +32,4 @@ with picamera.PiCamera() as camera:
         rendered = build_images(picture_list)
 
         # show rendered
-        display_rendered(camera, rendered, 5)
+        display_rendered(camera, rendered, 3)
